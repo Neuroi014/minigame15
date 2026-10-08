@@ -273,3 +273,5 @@ main { padding-bottom: 0; }
 .ad-toggle:focus-visible { outline-color: var(--gold-light); }
 .sm-copy { display: flex; justify-content: space-between; align-items: center; gap: var(--s2); flex-wrap: wrap; }
 main:focus-visible { outline: none; }
+.ad-strip-wrap[data-ad] > .ad-close { top: 0; bottom: 0; right: var(--s1); margin: auto 0; transform: none; min-height: 36px; height: 36px; color: var(--ink); }
+.ad-strip-wrap[data-ad] > .ad-close:hover { background: rgba(0,0,0,.08); }

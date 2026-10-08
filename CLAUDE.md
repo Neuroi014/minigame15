@@ -17,7 +17,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Architecture
 
 - `index.html` は空の `<main id="main">` を持つシェルだけ。画面はすべて `app.js` が DOM で生成する。
-- ルーティングはハッシュ（`#janken` 等）。`route()` が `#` なし→`showHome()`、ゲーム id→`showGame()`。GitHub Pages で 404 にならないようハッシュ方式を維持する。
+- ルーティングはハッシュ（`#tetris` 等）。`route()` が `#` なし→`showHome()`、ゲーム id→`showGame()`。GitHub Pages で 404 にならないようハッシュ方式を維持する。
 - ゲームは `GAMES` 配列の1オブジェクト = 1ゲーム: `{ id, name, cat, time, how, desc, rule, timed?, best?: 'high'|'low', unit?, ad?, start(c) }`。サムネイルは `THUMB[id]`（160×100 の SVG、色は `.thumb .g/.p/.m` 等の CSS クラスで指定）。`ad` は PR 枠（テトリス→TETRA NOVA）。追加・削除はここだけで一覧・「次のゲーム」・進捗表示に反映される。
 - `start(c)` が受け取るコンテキスト `c`（`showGame` 内で生成）:
   - `c.area` — ゲームの描画先
@@ -29,7 +29,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Accessibility conventions
 
-- 操作要素は `<button>` / `<a>`（Canvas は使わない）。盤面マスには `aria-label`（例「2行3列 空き」）を付ける。
+- 操作要素は `<button>` / `<a>`。Canvas はアクション系のみ（`c.canvas` で `role="img"`＋ラベル、キーボード操作必須、状況は `c.say` で伝える）。盤面マスには `aria-label`（例「2行3列 空き」）を付ける。
 - 色だけで情報を伝えない（サイモンは色名を表示）。時間制限ありは `timed: true` で一覧に明記。
 - ハッシュ遷移時のみ `h1` に、結果時は結果要素にフォーカスを移す（初回表示では移さない＝光る枠を出さない）。フォーカス表示は `:focus-visible` の細い線のみ。
 - タップ領域 48px 以上、`:focus-visible` を目立たせる、`prefers-reduced-motion` に対応済み。色は `style.css` の `:root` トークンで管理。

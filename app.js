@@ -626,7 +626,7 @@ function showHome() {
       el('div', { className: 'list-head' }, [el('h2', { id: 'list-h', className: 'section-h', textContent: 'ゲーム一覧' }), chips]),
       grid,
     ]),
-    adWide(copy()), adWide(copy()),
+    adWide(copy()),
   );
   renderGrid();
   if (focusOnRoute) h1.focus();
@@ -651,7 +651,7 @@ function showGame(g) {
     adWide(g.ad ? g.ad.text : copy()),
     status, area, actions,
   );
-  main.append(adWide(copy()), adWide(copy()), adWide(copy()));
+  main.append(adWide(copy()));
   const startBtn = el('button', { className: 'primary huge', textContent: 'スタート　→', on: { click: begin } });
   actions.append(startBtn);
   if (focusOnRoute) h1.focus();

@@ -261,7 +261,6 @@ main { padding-bottom: 0; }
 @media (prefers-reduced-motion: reduce) { .ad-strip, .ad-toast { animation: none !important; } }
 .ad-band { grid-column: 1 / -1; }
 .ad-band .ad { margin: 0; }
-.ad + .ad { margin-top: calc(-1 * var(--s3)); }
 
 [data-ad] { position: relative; }
 [data-ad] > .ad-close { position: absolute; top: 6px; right: 6px; z-index: 2; }

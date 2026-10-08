@@ -1,0 +1,92 @@
+:root {
+  --bg: #fff8ef;
+  --card: #ffffff;
+  --text: #1f2430;
+  --muted: #555b66;
+  --primary: #2346d8;
+  --primary-text: #ffffff;
+  --border: #e3d9cc;
+  --ok: #16794a;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif;
+  font-size: 18px;
+  line-height: 1.6;
+}
+.skip { position: absolute; left: -9999px; }
+.skip:focus { left: 16px; top: 8px; background: #fff; padding: 8px; z-index: 10; }
+:focus-visible { outline: 4px solid #ffb300; outline-offset: 3px; box-shadow: 0 0 0 7px var(--text); }
+
+.top { padding: 12px 16px; border-bottom: 2px solid var(--border); background: var(--card); }
+.logo { font-weight: 800; font-size: 20px; color: var(--text); text-decoration: none; }
+main { max-width: 860px; margin: 0 auto; padding: 16px; }
+h1 { font-size: 28px; margin: 8px 0; }
+h1:focus { outline: none; }
+
+/* buttons */
+button, .btn {
+  font: inherit; font-weight: 700;
+  min-height: 48px; min-width: 48px;
+  padding: 10px 20px;
+  border-radius: 14px;
+  border: 2px solid var(--text);
+  background: var(--card); color: var(--text);
+  cursor: pointer; text-decoration: none;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  box-shadow: 0 4px 0 var(--text);
+  transition: transform .05s;
+}
+button:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--text); }
+button:disabled { opacity: .55; cursor: not-allowed; }
+.primary { background: var(--primary); color: var(--primary-text); border-color: var(--primary); box-shadow: 0 4px 0 #142c8f; }
+.huge { font-size: 22px; padding: 16px 28px; width: 100%; max-width: 420px; }
+
+/* home */
+.hero { text-align: center; padding: 16px 0 8px; }
+.hero p { color: var(--muted); margin: 4px 0 16px; }
+.progress { font-weight: 700; margin: 12px 0 4px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; list-style: none; padding: 0; margin: 20px 0; }
+.card {
+  display: block; height: 100%;
+  background: var(--card); color: var(--text); text-decoration: none;
+  border: 2px solid var(--border); border-radius: 18px; padding: 14px 16px;
+}
+.card:hover { border-color: var(--text); }
+.card .emoji { font-size: 36px; }
+.card h2 { font-size: 20px; margin: 4px 0; }
+.card p { margin: 0; color: var(--muted); font-size: 16px; }
+.meta { font-size: 14px; color: var(--muted); margin-top: 6px !important; }
+.badge { display: inline-block; font-size: 14px; font-weight: 700; color: var(--ok); }
+
+/* game */
+.crumb { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.crumb a { color: var(--primary); font-weight: 700; }
+.rule { background: var(--card); border: 2px solid var(--border); border-radius: 14px; padding: 10px 14px; }
+.status { min-height: 1.6em; font-weight: 700; font-size: 20px; margin: 12px 0; }
+.area { margin: 12px 0; }
+.row { display: flex; flex-wrap: wrap; gap: 12px; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 20px 0; }
+.result { background: #fff3c4; border: 2px solid var(--text); border-radius: 16px; padding: 14px 16px; font-size: 22px; font-weight: 800; }
+.result:focus { outline: 4px solid #ffb300; }
+.bigdisplay { font-size: 48px; font-weight: 800; font-variant-numeric: tabular-nums; text-align: center; }
+
+.board { display: grid; gap: 8px; max-width: 360px; }
+.board button { aspect-ratio: 1; font-size: 30px; padding: 0; border-radius: 12px; }
+.c3 { grid-template-columns: repeat(3, 1fr); }
+.c4 { grid-template-columns: repeat(4, 1fr); }
+.on { background: #ffd23f; }
+.go { background: var(--ok); color: #fff; border-color: var(--ok); }
+.flash { outline: 6px solid var(--text); transform: scale(1.06); }
+.reaction { width: 100%; min-height: 180px; font-size: 28px; }
+
+input[type=number] { font: inherit; font-size: 24px; width: 140px; min-height: 48px; padding: 6px 10px; border: 2px solid var(--text); border-radius: 12px; }
+label { font-weight: 700; display: block; margin-bottom: 6px; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+  .flash { transform: none; }
+}

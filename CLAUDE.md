@@ -18,7 +18,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - `index.html` は空の `<main id="main">` を持つシェルだけ。画面はすべて `app.js` が DOM で生成する。
 - ルーティングはハッシュ（`#tetris` 等）。`route()` が `#` なし→`showHome()`、ゲーム id→`showGame()`。GitHub Pages で 404 にならないようハッシュ方式を維持する。
-- ゲームは `GAMES` 配列の1オブジェクト = 1ゲーム: `{ id, name, cat, time, how, desc, rule, timed?, best?: 'high'|'low', unit?, ad?, start(c) }`。サムネイルは `THUMB[id]`（160×100 の SVG、色は `.thumb .g/.p/.m` 等の CSS クラスで指定）。`ad` は PR 枠（テトリス→TETRA NOVA）。追加・削除はここだけで一覧・「次のゲーム」・進捗表示に反映される。
+- ゲームは `GAMES` 配列の1オブジェクト = 1ゲーム: `{ id, name, cat, time, how, desc, rule, timed?, best?: 'high'|'low', unit?, ad?, start(c) }`。サムネイルは `THUMB[id]`（160×100 の SVG、色は `.thumb .g/.p/.m` 等の CSS クラスで指定）。TETRA NOVA の PR は上部帯・一覧カード（4・10番目）・横長バナー・結果画面・右下トースト（プレイ中は非表示）・サイトマップに出す。モーダル化やフォーカス奪取はしない。`ad.text` はテトリス用の固定コピー。サイトマップは `buildSitemap()` が GAMES から生成。追加・削除はここだけで一覧・「次のゲーム」・進捗表示に反映される。
 - `start(c)` が受け取るコンテキスト `c`（`showGame` 内で生成）:
   - `c.area` — ゲームの描画先
   - `c.say(text)` — `aria-live` のステータス表示（状態変化は必ずこれで伝える）

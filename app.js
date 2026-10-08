@@ -509,6 +509,52 @@ const no = g => String(GAMES.indexOf(g) + 1).padStart(2, '0');
 const bestText = g => { const v = g.best && store.best(g.id); return v != null && v !== undefined ? `ベスト ${v}${g.unit}` : ''; };
 let filter = 'all';
 
+// ===== TETRA NOVA（PR） — 目立たせるが、操作の邪魔はしない（モーダル禁止・フォーカスを奪わない・常に「PR」表記・閉じられる）
+const AD = { href: 'https://neuroi014.github.io/tetra-nova/', title: 'TETRA NOVA' };
+const COPIES = ['もっと本格的なテトリスを遊ぶなら。', '15ゲームに飽きたら、本気のテトリスへ。', 'いま一番アツいブロックパズル。', 'そのスコア、TETRA NOVAでも出せる？', '演出にこだわった、特別なテトリス。'];
+const copy = () => COPIES[rand(COPIES.length)];
+const adLink = (cls, kids) => el('a', { className: cls, href: AD.href, target: '_blank', rel: 'noopener' }, kids);
+const adWide = text => el('aside', { className: 'ad', 'aria-label': '広告' }, [adLink('', [
+  el('span', { className: 'ad-tag', textContent: 'PR' }),
+  el('span', { className: 'ad-body' }, [el('strong', { textContent: AD.title }), el('span', { textContent: text })]),
+  el('span', { className: 'ad-cta', textContent: '遊んでみる ↗（新しいタブ）' }),
+])]);
+const adCard = () => el('li', { className: 'ad-li' }, [adLink('card ad-card', [
+  el('div', { className: 'thumb cat-ad', html: THUMB.tetris }),
+  el('div', { className: 'card-body' }, [
+    el('div', { className: 'card-head' }, [el('span', { className: 'ad-tag', textContent: 'PR' }), el('span', { className: 'cat', textContent: '外部サイト' })]),
+    el('h2', { textContent: AD.title }),
+    el('p', { textContent: copy() }),
+    el('div', { className: 'card-foot' }, [el('span', { className: 'badge new', textContent: '遊んでみる ↗（新しいタブ）' })]),
+  ]),
+])]);
+function hideToast() { document.querySelector('.ad-toast')?.remove(); }
+function showToast() {
+  hideToast();
+  const t = el('aside', { className: 'ad-toast', 'aria-label': '広告' }, [
+    adLink('ad-toast-link', [el('span', { className: 'ad-tag', textContent: 'PR' }), el('strong', { textContent: AD.title }), el('span', { textContent: copy() })]),
+    el('button', { className: 'ad-close', 'aria-label': '広告を閉じる', textContent: '×', on: { click: hideToast } }),
+  ]);
+  document.body.append(t);
+}
+
+function buildSitemap() {
+  const f = document.getElementById('sitemap');
+  const col = (h, items) => el('div', { className: 'sm-col' }, [el('h3', { textContent: h }), el('ul', {}, items.map(([href, t, ext]) => el('li', {}, [el('a', ext ? { href, textContent: t, target: '_blank', rel: 'noopener' } : { href, textContent: t })])))]);
+  f.append(
+    el('div', { className: 'sm-inner' }, [
+      el('div', { className: 'sm-brand' }, [el('p', { className: 'logo', html: 'ミニゲーム<span>15</span>' }), el('p', { textContent: 'ブラウザですぐ遊べる15のミニゲーム。' })]),
+      el('nav', { className: 'sm-nav', 'aria-label': 'サイトマップ' }, [
+        col('サイト', [['#', 'ホーム（ゲーム一覧）']]),
+        ...Object.entries(CATS).map(([k, v]) => col(v, GAMES.filter(g => g.cat === k).map(g => ['#' + g.id, g.name]))),
+        col('PR', [[AD.href, `${AD.title} ↗`, true]]),
+      ]),
+    ]),
+    el('p', { className: 'sm-copy', textContent: '© 2026 ミニゲーム15' }),
+  );
+}
+
+
 function showHome() {
   document.title = 'ミニゲーム15 — 今日はどれで遊ぶ？';
   const played = store.played();
@@ -520,7 +566,7 @@ function showHome() {
   const chips = el('div', { className: 'chips', role: 'group', 'aria-label': 'ジャンルで絞り込み' });
   const renderGrid = () => {
     grid.innerHTML = '';
-    GAMES.filter(g => filter === 'all' || g.cat === filter).forEach(g => grid.append(el('li', {}, [
+    GAMES.filter(g => filter === 'all' || g.cat === filter).forEach((g, i) => { if (i === 3 || i === 9) grid.append(adCard()); grid.append(el('li', {}, [
       el('a', { className: 'card', href: '#' + g.id }, [
         el('div', { className: `thumb cat-${g.cat}`, html: THUMB[g.id] }),
         el('div', { className: 'card-body' }, [
@@ -534,7 +580,7 @@ function showHome() {
           ]),
         ]),
       ]),
-    ])));
+    ])); });
   };
   [['all', 'すべて'], ...Object.entries(CATS)].forEach(([k, v]) => chips.append(el('button', {
     className: 'chip', textContent: `${v}（${k === 'all' ? GAMES.length : GAMES.filter(g => g.cat === k).length}）`, 'aria-pressed': String(filter === k),
@@ -556,6 +602,7 @@ function showHome() {
         el('p', { className: 'feature-cap' }, [el('span', { className: 'eyebrow', textContent: 'Pick Up' }), el('span', { textContent: `No.${no(next)}　${next.name}` })]),
       ]),
     ]),
+    adWide(copy()),
     el('section', { className: 'list', 'aria-labelledby': 'list-h' }, [
       el('div', { className: 'list-head' }, [el('h2', { id: 'list-h', className: 'section-h', textContent: 'ゲーム一覧' }), chips]),
       grid,
@@ -583,13 +630,7 @@ function showGame(g) {
     el('div', { className: 'rule' }, [el('p', { className: 'label', textContent: 'あそびかた' }), el('p', { textContent: g.rule })]),
     status, area, actions,
   );
-  if (g.ad) main.append(el('aside', { className: 'ad', 'aria-label': '広告' }, [
-    el('a', { href: g.ad.href, target: '_blank', rel: 'noopener' }, [
-      el('span', { className: 'ad-tag', textContent: 'PR' }),
-      el('span', { className: 'ad-body' }, [el('strong', { textContent: g.ad.title }), el('span', { textContent: g.ad.text })]),
-      el('span', { className: 'ad-cta', textContent: '遊んでみる ↗（新しいタブ）' }),
-    ]),
-  ]));
+  main.append(adWide(g.ad ? g.ad.text : copy()));
   const startBtn = el('button', { className: 'primary huge', textContent: 'スタート　→', on: { click: begin } });
   actions.append(startBtn);
   if (focusOnRoute) h1.focus();
@@ -597,6 +638,7 @@ function showGame(g) {
   function begin() {
     clearAll();
     area.innerHTML = ''; actions.innerHTML = ''; status.textContent = '';
+    hideToast();
     let ended = false;
     const held = new Set();
     listen(document, 'keydown', e => held.add(e.key));
@@ -635,7 +677,9 @@ function showGame(g) {
             el('a', { className: 'btn', href: '#' + next.id, textContent: `次のゲーム「${next.name}」　→` }),
             el('a', { className: 'btn', href: '#', textContent: '一覧へ戻る' }),
           ]),
+          adLink('ad-inline', [el('span', { className: 'ad-tag', textContent: 'PR' }), el('span', { textContent: `スコアを伸ばしたいなら ${AD.title} ↗` })]),
         );
+        timers.push(setTimeout(showToast, 1500));
         res.focus();
       },
     });
@@ -646,8 +690,11 @@ let focusOnRoute = false;
 function route() {
   clearAll();
   const g = GAMES.find(x => x.id === location.hash.slice(1));
+  hideToast();
   g ? showGame(g) : showHome();
   window.scrollTo(0, 0);
+  timers.push(setTimeout(showToast, 2500));
 }
 window.addEventListener('hashchange', () => { focusOnRoute = true; route(); });
+buildSitemap();
 route();

@@ -513,27 +513,33 @@ let filter = 'all';
 const AD = { href: 'https://neuroi014.github.io/tetra-nova/', title: 'TETRA NOVA' };
 const COPIES = ['もっと本格的なテトリスを遊ぶなら。', '15ゲームに飽きたら、本気のテトリスへ。', 'いま一番アツいブロックパズル。', 'そのスコア、TETRA NOVAでも出せる？', '演出にこだわった、特別なテトリス。'];
 const copy = () => COPIES[rand(COPIES.length)];
+const adsOff = () => store.read('noads', false);
+const closeAd = e => { const box = e.currentTarget.closest('[data-ad]'); box.remove(); main.focus(); };
+const adClose = label => el('button', { className: 'ad-close', 'aria-label': label || 'この広告を閉じる', textContent: '×', on: { click: closeAd } });
 const adLink = (cls, kids) => el('a', { className: cls, href: AD.href, target: '_blank', rel: 'noopener' }, kids);
-const adWide = text => el('aside', { className: 'ad', 'aria-label': '広告' }, [adLink('', [
+const adWide = text => adsOff() ? '' : el('aside', { className: 'ad', 'aria-label': '広告', 'data-ad': '' }, [adClose(), adLink('', [
   el('span', { className: 'ad-tag', textContent: 'PR' }),
   el('span', { className: 'ad-body' }, [el('strong', { textContent: AD.title }), el('span', { textContent: text })]),
   el('span', { className: 'ad-cta', textContent: '遊んでみる ↗（新しいタブ）' }),
 ])]);
-const adCard = () => el('li', { className: 'ad-li' }, [adLink('card ad-card', [
-  el('div', { className: 'thumb cat-ad', html: THUMB.tetris }),
+const adCard = () => adsOff() ? '' : el('li', { className: 'ad-li', 'data-ad': '' }, [adClose(), adLink('card ad-card', [
+  el('div', { className: 'thumb cat-action', html: THUMB.tetris }),
   el('div', { className: 'card-body' }, [
-    el('div', { className: 'card-head' }, [el('span', { className: 'ad-tag', textContent: 'PR' }), el('span', { className: 'cat', textContent: '外部サイト' })]),
-    el('h2', { textContent: AD.title }),
+    el('div', { className: 'card-head' }, [el('span', { className: 'num', textContent: 'PR' }), el('span', { className: 'cat', textContent: 'アクション' })]),
+    el('h2', { textContent: 'テトラノヴァ' }),
     el('p', { textContent: copy() }),
-    el('div', { className: 'card-foot' }, [el('span', { className: 'badge new', textContent: '遊んでみる ↗（新しいタブ）' })]),
+    el('p', { className: 'meta', textContent: '3分〜　／　矢印キー・スペース' }),
+    el('div', { className: 'card-foot' }, [el('span', { className: 'badge new', textContent: '外部サイト ↗' }), el('span', { className: 'best', textContent: 'NEW' })]),
   ]),
 ])]);
+const adBand = () => adsOff() ? '' : el('li', { className: 'ad-band' }, [adWide(copy())]);
 function hideToast() { document.querySelector('.ad-toast')?.remove(); }
 function showToast() {
   hideToast();
+  if (adsOff()) return;
   const t = el('aside', { className: 'ad-toast', 'aria-label': '広告' }, [
     adLink('ad-toast-link', [el('span', { className: 'ad-tag', textContent: 'PR' }), el('strong', { textContent: AD.title }), el('span', { textContent: copy() })]),
-    el('button', { className: 'ad-close', 'aria-label': '広告を閉じる', textContent: '×', on: { click: hideToast } }),
+    el('button', { className: 'ad-close', 'aria-label': '広告を閉じる', textContent: '×', on: { click: () => { hideToast(); main.focus(); } } }),
   ]);
   document.body.append(t);
 }
@@ -550,8 +556,21 @@ function buildSitemap() {
         col('PR', [[AD.href, `${AD.title} ↗`, true]]),
       ]),
     ]),
-    el('p', { className: 'sm-copy', textContent: '© 2026 ミニゲーム15' }),
+    el('div', { className: 'sm-copy' }, [
+      el('span', { textContent: '© 2026 ミニゲーム15' }),
+      el('button', { className: 'ad-toggle', 'aria-pressed': String(adsOff()), textContent: adsOff() ? '広告を表示する' : '広告をすべて非表示にする', on: { click: e => {
+        store.write('noads', !adsOff());
+        e.currentTarget.setAttribute('aria-pressed', String(adsOff()));
+        e.currentTarget.textContent = adsOff() ? '広告を表示する' : '広告をすべて非表示にする';
+        applyStrip(); route();
+      } } }),
+    ]),
   );
+}
+function applyStrip() {
+  const w = document.querySelector('.ad-strip-wrap');
+  w.hidden = adsOff();
+  if (!w.querySelector('.ad-close')) w.append(adClose('上部の広告を閉じる'));
 }
 
 
@@ -566,7 +585,7 @@ function showHome() {
   const chips = el('div', { className: 'chips', role: 'group', 'aria-label': 'ジャンルで絞り込み' });
   const renderGrid = () => {
     grid.innerHTML = '';
-    GAMES.filter(g => filter === 'all' || g.cat === filter).forEach((g, i) => { if (i === 3 || i === 9) grid.append(adCard()); grid.append(el('li', {}, [
+    GAMES.filter(g => filter === 'all' || g.cat === filter).forEach((g, i) => { if (i === 2 || i === 7 || i === 12) grid.append(adCard()); if (i === 6 || i === 12) grid.append(adBand()); grid.append(el('li', {}, [
       el('a', { className: 'card', href: '#' + g.id }, [
         el('div', { className: `thumb cat-${g.cat}`, html: THUMB[g.id] }),
         el('div', { className: 'card-body' }, [
@@ -607,6 +626,7 @@ function showHome() {
       el('div', { className: 'list-head' }, [el('h2', { id: 'list-h', className: 'section-h', textContent: 'ゲーム一覧' }), chips]),
       grid,
     ]),
+    adWide(copy()), adWide(copy()),
   );
   renderGrid();
   if (focusOnRoute) h1.focus();
@@ -628,9 +648,10 @@ function showGame(g) {
       el('div', {}, [el('p', { className: 'cat', textContent: CATS[g.cat] }), h1, best]),
     ]),
     el('div', { className: 'rule' }, [el('p', { className: 'label', textContent: 'あそびかた' }), el('p', { textContent: g.rule })]),
+    adWide(g.ad ? g.ad.text : copy()),
     status, area, actions,
   );
-  main.append(adWide(g.ad ? g.ad.text : copy()));
+  main.append(adWide(copy()), adWide(copy()), adWide(copy()));
   const startBtn = el('button', { className: 'primary huge', textContent: 'スタート　→', on: { click: begin } });
   actions.append(startBtn);
   if (focusOnRoute) h1.focus();
@@ -677,7 +698,7 @@ function showGame(g) {
             el('a', { className: 'btn', href: '#' + next.id, textContent: `次のゲーム「${next.name}」　→` }),
             el('a', { className: 'btn', href: '#', textContent: '一覧へ戻る' }),
           ]),
-          adLink('ad-inline', [el('span', { className: 'ad-tag', textContent: 'PR' }), el('span', { textContent: `スコアを伸ばしたいなら ${AD.title} ↗` })]),
+          adsOff() ? '' : adLink('ad-inline', [el('span', { className: 'ad-tag', textContent: 'PR' }), el('span', { textContent: `スコアを伸ばしたいなら ${AD.title} ↗` })]),
         );
         timers.push(setTimeout(showToast, 1500));
         res.focus();
@@ -697,4 +718,5 @@ function route() {
 }
 window.addEventListener('hashchange', () => { focusOnRoute = true; route(); });
 buildSitemap();
+applyStrip();
 route();

@@ -207,8 +207,9 @@ button:disabled { opacity: .45; cursor: not-allowed; background: transparent; co
 }
 
 /* ===== TETRA NOVA（PR） ===== */
+.ad-strip-wrap { position: sticky; top: 0; z-index: 20; }
+.ad-strip-wrap .ad-close { top: 50%; transform: translateY(-50%); color: var(--ink); min-height: 36px; }
 .ad-strip {
-  position: sticky; top: 0; z-index: 20;
   display: flex; justify-content: center; align-items: center; gap: var(--s2);
   padding: 10px var(--s2); font-size: 14px; color: var(--ink); text-decoration: none;
   background: linear-gradient(90deg, #c9a26a, #ecd6a3, #c9a26a); background-size: 200% 100%;
@@ -258,3 +259,17 @@ button:disabled { opacity: .45; cursor: not-allowed; background: transparent; co
 main { padding-bottom: 0; }
 @media (max-width: 800px) { .sm-inner { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .ad-strip, .ad-toast { animation: none !important; } }
+.ad-band { grid-column: 1 / -1; }
+.ad-band .ad { margin: 0; }
+.ad + .ad { margin-top: calc(-1 * var(--s3)); }
+
+[data-ad] { position: relative; }
+[data-ad] > .ad-close { position: absolute; top: 6px; right: 6px; z-index: 2; }
+.ad[data-ad] > .ad-close { top: 4px; right: 4px; min-height: 36px; min-width: 36px; font-size: 18px; color: var(--ivory); }
+.ad a { padding-right: var(--s6); }
+.ad-li > .ad-close { color: var(--ivory); background: rgba(0,0,0,.35); border-radius: 50%; min-width: 36px; min-height: 36px; }
+.ad-toggle { min-height: 36px; padding: 4px var(--s2); font-size: 12px; color: #e8e4dc; border-color: rgba(255,255,255,.3); }
+.ad-toggle:hover { background: var(--ivory); color: var(--ink); }
+.ad-toggle:focus-visible { outline-color: var(--gold-light); }
+.sm-copy { display: flex; justify-content: space-between; align-items: center; gap: var(--s2); flex-wrap: wrap; }
+main:focus-visible { outline: none; }
